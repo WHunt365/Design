@@ -1,0 +1,177 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+
+public class PointOfSales extends JFrame {
+
+    private static final long serialVersionUID = 1L;
+    private JPanel contentPane;
+    private JTextField textField;
+    private JTextField textField_1;
+    private JTextField textField_2;
+    private JTextField textField_3;
+    private JTextField textField_4;
+    private JTable itemTable;
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    PointOfSales frame = new PointOfSales();
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public PointOfSales() {
+        setResizable(false);
+        setBackground(new Color(129, 73, 133));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 800, 400);
+        contentPane = new JPanel();
+        contentPane.setForeground(new Color(0, 0, 0));
+        contentPane.setBackground(new Color(129, 73, 133));
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(contentPane);
+        contentPane.setLayout(null);
+
+        JLabel lblNewLabel = new JLabel("Barcode:");
+        lblNewLabel.setForeground(new Color(0, 0, 0));
+        lblNewLabel.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 14));
+        lblNewLabel.setBounds(43, 81, 59, 39);
+        contentPane.add(lblNewLabel);
+
+        JLabel lblItemPrice = new JLabel("Item name:");
+        lblItemPrice.setForeground(Color.BLACK);
+        lblItemPrice.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 14));
+        lblItemPrice.setBounds(43, 117, 86, 39);
+        contentPane.add(lblItemPrice);
+
+        JLabel lblNewLabel_1_1 = new JLabel("Item price:");
+        lblNewLabel_1_1.setForeground(Color.BLACK);
+        lblNewLabel_1_1.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 14));
+        lblNewLabel_1_1.setBounds(43, 153, 79, 39);
+        contentPane.add(lblNewLabel_1_1);
+
+        JLabel lblNewLabel_1_2 = new JLabel("pcs of item:");
+        lblNewLabel_1_2.setForeground(Color.BLACK);
+        lblNewLabel_1_2.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 14));
+        lblNewLabel_1_2.setBounds(43, 185, 79, 39);
+        contentPane.add(lblNewLabel_1_2);
+
+        JLabel lblNewLabel_1 = new JLabel("POINT OF SALES");
+        lblNewLabel_1.setFont(new Font("Rockwell Condensed", Font.BOLD, 36));
+        lblNewLabel_1.setBounds(200, 10, 400, 50); // Increased size and centered
+        lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER); // Centered
+        contentPane.add(lblNewLabel_1);
+
+        textField = new JTextField();
+        textField.setBounds(136, 93, 96, 19);
+        contentPane.add(textField);
+        textField.setColumns(10);
+
+        textField_1 = new JTextField();
+        textField_1.setColumns(10);
+        textField_1.setBounds(136, 129, 96, 19);
+        contentPane.add(textField_1);
+
+        textField_2 = new JTextField();
+        textField_2.setColumns(10);
+        textField_2.setBounds(136, 165, 96, 19);
+        contentPane.add(textField_2);
+
+        textField_3 = new JTextField();
+        textField_3.setColumns(10);
+        textField_3.setBounds(136, 197, 96, 19);
+        contentPane.add(textField_3);
+
+        JButton btnNewButton = new JButton("ADD");
+        btnNewButton.setFont(new Font("Sitka Text", Font.BOLD, 12));
+        btnNewButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Retrieve values from input fields
+                String itemName = textField_1.getText();
+                String itemPrice = textField_2.getText();
+                String pcs = textField_3.getText();
+                String barcode = textField.getText();
+
+                // Check if all fields are filled
+                if (itemName.isEmpty() || itemPrice.isEmpty() || pcs.isEmpty() || barcode.isEmpty()) {
+                    // Handle error, display a message, or take appropriate action
+                    return;
+                }
+
+                // Calculate subtotal based on item price and pcs
+                double subtotal = Double.parseDouble(itemPrice) * Integer.parseInt(pcs);
+
+                // Create Object arrays with the retrieved values
+                Object[] rowData = {barcode, itemName, itemPrice, pcs + " pcs", subtotal};
+
+                // Get the DefaultTableModel from the item table
+                DefaultTableModel itemTableModel = (DefaultTableModel) itemTable.getModel();
+                // Add the Object array to the item table model
+                itemTableModel.addRow(rowData);
+
+                // Update the Grand Total
+                updateGrandTotal();
+
+                // Clear the input fields after adding the data
+                textField.setText("");
+                textField_1.setText("");
+                textField_2.setText("");
+                textField_3.setText("");
+            }
+        });
+        btnNewButton.setBounds(149, 238, 69, 21);
+        contentPane.add(btnNewButton);
+
+        // Item Table
+        itemTable = new JTable();
+        itemTable.setModel(new DefaultTableModel(
+                new Object[][]{
+
+                },
+                new String[]{
+                        "Barcode", "NAME", "PRICE", "QUANTITY", "TOTAL"
+                }
+        ));
+
+        JScrollPane itemScrollPane = new JScrollPane(itemTable);
+        itemScrollPane.setBounds(255, 114, 328, 145);
+        contentPane.add(itemScrollPane);
+
+        JLabel lblGrandTotal = new JLabel("Grand total:");
+        lblGrandTotal.setForeground(Color.BLACK);
+        lblGrandTotal.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 14));
+        lblGrandTotal.setBounds(280, 81, 86, 39);
+        contentPane.add(lblGrandTotal);
+
+        textField_4 = new JTextField();
+        textField_4.setColumns(10);
+        textField_4.setBounds(367, 93, 96, 19);
+        contentPane.add(textField_4);
+    }
+
+    // Method to update the Grand Total
+    private void updateGrandTotal() {
+        DefaultTableModel model = (DefaultTableModel) itemTable.getModel();
+        int rowCount = model.getRowCount();
+        double grandTotal = 0;
+
+        for (int i = 0; i < rowCount; i++) {
+            Object value = model.getValueAt(i, 4);
+            if (value instanceof Double) {
+                grandTotal += (Double) value;
+            } else if (value instanceof String) {
+                grandTotal += Double.parseDouble((String) value);
+            }
+        }
+
+        textField_4.setText(String.format("%.2f", grandTotal));
+    }
+}
